@@ -23,7 +23,7 @@ sends a transaction, so it needs no funds and no keys to run:
 
 | Endpoint | Calls used |
 |---|---|
-| EVM RPC `https://test-evm-rpc-v3.portaldot.dev` | `eth_chainId`, `eth_blockNumber`, `eth_gasPrice`, `eth_getBlockByNumber` (incl. the `finalized` tag) |
+| EVM RPC `https://test-evm-rpc-v3.portaldot.dev` | `eth_chainId`, `eth_gasPrice`, `eth_getBlockByNumber` (latest + `finalized` tag) |
 | Substrate RPC `https://test-node-v3.portaldot.dev` | `system_health`, `chain_getHeader`, `chain_getFinalizedHead` |
 
 Chain pinned: **Portaldot V3 testnet, chain ID 420420777**.
@@ -83,7 +83,8 @@ docs/            demo video script
 ## Status
 
 v0.1 — poller and dashboard working against the live testnet.
-Demo video: see `docs/DEMO-SCRIPT.md` (link added with the submission).
+Demo video (2:02, recorded 2026-11-04) follows `docs/DEMO-SCRIPT.md`: a real
+screencast of the live dashboard with narration.
 
 ## License
 

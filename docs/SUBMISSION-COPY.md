@@ -29,7 +29,7 @@ Solution: NodePulse is a live health monitor for Portaldot V3 testnet nodes,
 built solo by tofikhashmi2222 for the Portaldot Hacker House 2026, Node
 Operations & Tooling track. It polls both public Portaldot V3 testnet RPC
 endpoints every 6 seconds and shows block height, average block time (about
-6 seconds), gas price, finality lag (about 2 blocks), peers and sync state,
+6 seconds), gas price, finality lag (about 2-3 blocks), peers and sync state,
 per-endpoint uptime, and a block-time chart with sample history. It also
 alerts on block stalls, lag spikes, endpoint outages, and nodes that are
 syncing.

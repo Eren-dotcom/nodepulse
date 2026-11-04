@@ -1,9 +1,9 @@
-# NodePulse — pitch deck (DRAFT, prepared 2026-11-04 evening IST)
+# NodePulse — pitch deck (text approved 2026-11-04 evening IST)
 
 For Portaldot Hacker House 2026, track: **Node Operations & Tooling**.
-Status: draft text only — not yet designed, not yet submitted. Every number
-below is from the verified v0.1 build; do not change a number without a fresh
-live check.
+Status: text user-approved; designed deck at `docs/nodepulse-pitch-deck.pptx`
+(+ PDF). Every number below is from the verified v0.1 build; do not change a
+number without a fresh live check.
 
 ## Slide 1 — Title
 **NodePulse — Portaldot testnet health at a glance**
@@ -29,15 +29,15 @@ One dashboard, polling both public endpoints every 6 seconds:
 - Chain: Portaldot V3 testnet, chain ID 420420777
 - Block height ticking: 320,791 at last check
 - Block time: steady ~6 seconds
-- Finality lag: ~2 blocks, cross-checked two ways (Substrate API + EVM
+- Finality lag: ~2-3 blocks, cross-checked two ways (Substrate API + EVM
   `finalized` tag)
 - Unit tests pass; live smoke test passes; dashboard serves real data
 
 ## Slide 5 — Read-only by design (the honest edge)
 NodePulse only makes read-only RPC calls. It never signs anything and never
 sends a transaction — so it needs no wallet, no keys, no tPOT to run.
-- EVM RPC: `eth_chainId`, `eth_blockNumber`, `eth_gasPrice`,
-  `eth_getBlockByNumber` (incl. `finalized` tag)
+- EVM RPC: `eth_chainId`, `eth_gasPrice`, `eth_getBlockByNumber`
+  (latest + `finalized` tag)
 - Substrate RPC: `system_health`, `chain_getHeader`, `chain_getFinalizedHead`
 Honest caveat for judges: this is a live-data tool, not a deployed contract,
 so it is weaker on on-chain interaction than a deployed DApp — and stronger
@@ -66,10 +66,9 @@ in minutes. Demo video (≤3 min) shows the live dashboard; script in
 `docs/DEMO-SCRIPT.md`.
 
 ---
-## Remaining before submission (deadline Nov 6, 09:30 IST)
-1. Push this repo public on GitHub (currently local-only, 4 commits, Nov 4
-   evening — outside the final-24h window that starts Nov 5, 09:30 IST)
-2. Design this deck from the draft above (or hand it to a logged-in AI for
-   a design pass — user approved all logged-in AIs for NodePulse)
-3. Record the ≤3 min demo video from `docs/DEMO-SCRIPT.md`
-4. Submit on DoraHacks with repo link + deck + video
+## Status before submission (deadline Nov 6, 09:30 IST)
+1. Repo public on GitHub: https://github.com/Eren-dotcom/nodepulse — done
+   2026-11-04 (outside the final-24h window that starts Nov 5, 09:30 IST)
+2. Deck designed from the text above (`docs/nodepulse-pitch-deck.pptx`) — done
+3. Demo video recorded from `docs/DEMO-SCRIPT.md` (2:02) — done 2026-11-04
+4. Remaining: submit on DoraHacks with repo link + deck + video
