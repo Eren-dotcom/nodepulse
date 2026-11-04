@@ -9,6 +9,9 @@ Built for **Portaldot Hacker House 2026**, track: **Node Operations & Tooling**.
 the real testnet. On Vercel the monitor takes one fresh sample per API request
 (serverless); run it locally for continuous 6-second polling.
 
+**Demo video (2:02): https://youtu.be/ZQMimDw0RNo** — a real screencast of the
+live dashboard with narration.
+
 ## Why NodePulse
 
 Node operators and dApp builders on Portaldot have no simple way to see whether
@@ -83,8 +86,9 @@ docs/            demo video script
 ## Status
 
 v0.1 — poller and dashboard working against the live testnet.
-Demo video (2:02, recorded 2026-11-04) follows `docs/DEMO-SCRIPT.md`: a real
-screencast of the live dashboard with narration.
+Demo video (2:02, recorded 2026-11-04): https://youtu.be/ZQMimDw0RNo —
+follows `docs/DEMO-SCRIPT.md`, a real screencast of the live dashboard with
+narration.
 
 ## License
 

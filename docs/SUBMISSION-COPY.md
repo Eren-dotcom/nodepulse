@@ -54,6 +54,11 @@ risking funds or keys.
 
 Limitation: NodePulse is a live-data tool, not a deployed smart contract.
 
+## Demo video
+
+https://youtu.be/ZQMimDw0RNo (2:02) — real screencast of the live dashboard
+with narration, following `docs/DEMO-SCRIPT.md`.
+
 ## Built with
 
 Node.js, JavaScript, Substrate JSON-RPC API, Ethereum JSON-RPC API, HTML/CSS

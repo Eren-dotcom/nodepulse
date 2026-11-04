@@ -62,13 +62,14 @@ alert webhooks, longer history.
 
 ## Slide 9 — Ask / close
 NodePulse: Portaldot testnet health at a glance — live, read-only, runnable
-in minutes. Demo video (≤3 min) shows the live dashboard; script in
-`docs/DEMO-SCRIPT.md`.
+in minutes. Demo video (2:02): https://youtu.be/ZQMimDw0RNo — shows the live
+dashboard; script in `docs/DEMO-SCRIPT.md`.
 
 ---
 ## Status before submission (deadline Nov 6, 09:30 IST)
 1. Repo public on GitHub: https://github.com/Eren-dotcom/nodepulse — done
    2026-11-04 (outside the final-24h window that starts Nov 5, 09:30 IST)
 2. Deck designed from the text above (`docs/nodepulse-pitch-deck.pptx`) — done
-3. Demo video recorded from `docs/DEMO-SCRIPT.md` (2:02) — done 2026-11-04
+3. Demo video recorded from `docs/DEMO-SCRIPT.md` (2:02,
+   https://youtu.be/ZQMimDw0RNo) — done 2026-11-04
 4. Remaining: submit on DoraHacks with repo link + deck + video
