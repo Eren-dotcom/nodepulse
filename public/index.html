@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NodePulse - Portaldot V3 Testnet Health</title>
+<style>
+  :root { --bg:#0b1220; --panel:#131e33; --panel2:#0f1930; --ink:#e8eefc; --dim:#8fa3c8; --accent:#ff5a4e; --ok:#3ed598; --warn:#ffc53d; --down:#ff6b6b; }
+  * { box-sizing: border-box; }
+  body { margin:0; font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; background:var(--bg); color:var(--ink); }
+  header { padding:20px 24px 8px; display:flex; align-items:baseline; gap:14px; flex-wrap:wrap; }
+  h1 { font-size:24px; margin:0; } h1 .pulse { color:var(--accent); }
+  .sub { color:var(--dim); font-size:14px; }
+  .badge { font-size:12px; padding:3px 10px; border-radius:999px; background:var(--panel); border:1px solid #24365c; color:var(--dim); }
+  .badge.live { color:var(--ok); border-color:var(--ok); }
+  main { padding:12px 24px 28px; max-width:1100px; }
+  .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:12px; }
+  .card { background:var(--panel); border:1px solid #1e2f52; border-radius:14px; padding:14px 16px; }
+  .card .label { font-size:12px; text-transform:uppercase; letter-spacing:.08em; color:var(--dim); }
+  .card .value { font-size:26px; font-weight:700; margin-top:6px; font-variant-numeric:tabular-nums; }
+  .card .hint { font-size:12px; color:var(--dim); margin-top:4px; }
+  section { margin-top:20px; background:var(--panel2); border:1px solid #1e2f52; border-radius:14px; padding:16px; }
+  section h2 { font-size:15px; margin:0 0 10px; color:var(--dim); text-transform:uppercase; letter-spacing:.08em; }
+  canvas { width:100%; height:110px; display:block; }
+  .alert { padding:9px 12px; border-radius:10px; margin:6px 0; font-size:14px; }
+  .alert.warn { background:#3a2f10; color:var(--warn); }
+  .alert.down { background:#3d1620; color:var(--down); }
+  .alert.none { background:#123324; color:var(--ok); }
+  table { width:100%; border-collapse:collapse; font-size:13px; font-variant-numeric:tabular-nums; }
+  th, td { text-align:right; padding:5px 8px; border-bottom:1px solid #1e2f52; }
+  th:first-child, td:first-child { text-align:left; }
+  th { color:var(--dim); font-weight:600; }
+  footer { color:var(--dim); font-size:12px; padding:0 24px 20px; }
+  code { color:#c9d8ff; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Node<span class="pulse">Pulse</span></h1>
+  <span class="sub">Portaldot V3 testnet - live node health</span>
+  <span id="liveBadge" class="badge">connecting...</span>
+  <span class="badge">read-only RPC - no wallet, no tPOT</span>
+</header>
+<main>
+  <div class="grid">
+    <div class="card"><div class="label">Block height</div><div class="value" id="height">-</div><div class="hint" id="chainId"></div></div>
+    <div class="card"><div class="label">Block time</div><div class="value" id="blockTime">-</div><div class="hint">avg seconds per block</div></div>
+    <div class="card"><div class="label">Gas price</div><div class="value" id="gas">-</div><div class="hint">wei (EVM RPC)</div></div>
+    <div class="card"><div class="label">Finality lag</div><div class="value" id="lag">-</div><div class="hint" id="lagHint">latest vs finalized</div></div>
+    <div class="card"><div class="label">Peers</div><div class="value" id="peers">-</div><div class="hint" id="syncState">substrate node</div></div>
+    <div class="card"><div class="label">Endpoint uptime</div><div class="value" id="uptime">-</div><div class="hint" id="uptimeHint">since monitor start</div></div>
+  </div>
+
+  <section>
+    <h2>Block time - recent samples</h2>
+    <canvas id="chart" width="1000" height="110"></canvas>
+  </section>
+
+  <section>
+    <h2>Alerts</h2>
+    <div id="alerts"><div class="alert none">No alerts</div></div>
+  </section>
+
+  <section>
+    <h2>Recent samples</h2>
+    <table>
+      <thead><tr><th>Time</th><th>Height</th><th>Block time</th><th>Gas (wei)</th><th>Finality lag</th><th>Peers</th></tr></thead>
+      <tbody id="rows"></tbody>
+    </table>
+  </section>
+</main>
+<footer>
+  NodePulse polls the public Portaldot V3 testnet RPC endpoints
+  (<code>test-evm-rpc-v3.portaldot.dev</code>, <code>test-node-v3.portaldot.dev</code>)
+  with read-only calls only. It never signs or sends a transaction.
+</footer>
+<script>
+const $ = (id) => document.getElementById(id);
+const fmt = (n) => (n == null ? '-' : n.toLocaleString('en-US'));
+
+function drawChart(samples) {
+  const c = $('chart'), ctx = c.getContext('2d');
+  const W = c.width, H = c.height;
+  ctx.clearRect(0, 0, W, H);
+  const pts = samples.map(s => s.evm && s.evm.ok ? s.evm.blockTimeSec : null).filter(v => v != null);
+  if (pts.length < 2) { ctx.fillStyle = '#8fa3c8'; ctx.font = '14px system-ui'; ctx.fillText('Collecting samples...', 10, 24); return; }
+  const max = Math.max(...pts) * 1.2, min = 0;
+  ctx.beginPath();
+  pts.forEach((v, i) => {
+    const x = (i / (pts.length - 1)) * (W - 20) + 10;
+    const y = H - 10 - ((v - min) / (max - min)) * (H - 30);
+    i ? ctx.lineTo(x, y) : ctx.moveTo(x, y);
+  });
+  ctx.strokeStyle = '#ff5a4e'; ctx.lineWidth = 2; ctx.stroke();
+  ctx.fillStyle = '#8fa3c8'; ctx.font = '12px system-ui';
+  ctx.fillText('max ' + max.toFixed(1) + 's', 10, 14);
+}
+
+async function refresh() {
+  try {
+    const [status, history] = await Promise.all([
+      fetch('/api/status').then(r => r.json()),
+      fetch('/api/history?n=60').then(r => r.json()),
+    ]);
+    const s = status.latest;
+    if (s && s.evm && s.evm.ok) {
+      $('height').textContent = fmt(s.evm.height);
+      $('chainId').textContent = 'chain ' + s.evm.chainId;
+      $('blockTime').textContent = s.evm.blockTimeSec == null ? '-' : s.evm.blockTimeSec + 's';
+      $('gas').textContent = fmt(s.evm.gasPriceWei);
+    }
+    if (s && s.substrate && s.substrate.ok) {
+      $('lag').textContent = s.substrate.finalityLag == null ? '-' : s.substrate.finalityLag + ' blocks';
+      $('lagHint').textContent = 'latest ' + fmt(s.substrate.latest) + ' / finalized ' + fmt(s.substrate.finalized);
+      $('peers').textContent = fmt(s.substrate.peers);
+      $('syncState').textContent = s.substrate.isSyncing ? 'SYNCING' : 'substrate node - in sync';
+    } else if (s && s.evm && s.evm.ok && s.evm.finalityLag != null) {
+      $('lag').textContent = s.evm.finalityLag + ' blocks';
+      $('lagHint').textContent = 'via EVM finalized tag';
+    }
+    const e = status.endpoints;
+    if (e) $('uptime').textContent = (e.evm.uptimePct ?? '-') + '% / ' + (e.substrate.uptimePct ?? '-') + '%';
+    $('uptimeHint').textContent = 'EVM / Substrate - ' + (e ? e.evm.polls : 0) + ' polls, up ' + status.uptimeSec + 's';
+    const badge = $('liveBadge');
+    badge.textContent = 'LIVE - updated ' + new Date().toLocaleTimeString();
+    badge.classList.add('live');
+
+    const alerts = (s && s.alerts) || [];
+    $('alerts').innerHTML = alerts.length
+      ? alerts.map(a => '<div class="alert ' + a.level + '">' + a.code + ' - ' + a.message + '</div>').join('')
+      : '<div class="alert none">No alerts - chain healthy</div>';
+
+    $('rows').innerHTML = history.slice(-10).reverse().map(s =>
+      '<tr><td>' + new Date(s.ts).toLocaleTimeString() + '</td>' +
+      '<td>' + (s.evm.ok ? fmt(s.evm.height) : 'down') + '</td>' +
+      '<td>' + (s.evm.ok && s.evm.blockTimeSec != null ? s.evm.blockTimeSec + 's' : '-') + '</td>' +
+      '<td>' + (s.evm.ok ? fmt(s.evm.gasPriceWei) : '-') + '</td>' +
+      '<td>' + (s.substrate.ok ? s.substrate.finalityLag : '-') + '</td>' +
+      '<td>' + (s.substrate.ok ? s.substrate.peers : '-') + '</td></tr>'
+    ).join('');
+    drawChart(history);
+  } catch (err) {
+    $('liveBadge').textContent = 'dashboard offline';
+  }
+}
+refresh();
+setInterval(refresh, 3000);
+</script>
+</body>
+</html>
