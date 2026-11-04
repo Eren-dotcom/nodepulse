@@ -5,6 +5,10 @@ finality lag, endpoint uptime and alerts, on one dashboard.
 
 Built for **Portaldot Hacker House 2026**, track: **Node Operations & Tooling**.
 
+**Live demo: https://nodepulse-pi.vercel.app** — the dashboard, running against
+the real testnet. On Vercel the monitor takes one fresh sample per API request
+(serverless); run it locally for continuous 6-second polling.
+
 ## Why NodePulse
 
 Node operators and dApp builders on Portaldot have no simple way to see whether
